@@ -1,0 +1,60 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class LogLibrary {
+    
+    // Enum para os diferentes níveis de log
+    public enum LogLevel {
+        DEBUG, WARNING, ERROR
+    }
+    
+    // Método para exibir log no console com cores
+    public static void logConsole(String message, LogLevel level) {
+        String colorCode = "\033[0m"; // código de cor padrão (reset)
+        switch (level) {
+            case DEBUG:
+                colorCode = "\033[32m"; // verde
+                break;
+            case WARNING:
+                colorCode = "\033[33m"; // amarelo
+                break;
+            case ERROR:
+                colorCode = "\033[31m"; // vermelho
+                break;
+        }
+        System.out.println(colorCode + getCurrentTime() + " " + message + "\033[0m"); // reset após a mensagem
+    }
+    
+    // Método para registrar log em arquivo
+    public static void logFile(String message, LogLevel level) {
+        String logFileName = "log.txt";
+        File logFile = new File(logFileName);
+        try {
+            FileWriter writer = new FileWriter(logFile, true); // true para append
+            writer.write(getCurrentTime() + " [" + level + "] " + message + "\n");
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    // Método para obter a hora corrente formatada
+    private static String getCurrentTime() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return dateFormat.format(new Date());
+    }
+    
+    public static void main(String[] args) {
+        // Exemplo de uso:
+        logConsole("Mensagem de depuração", LogLevel.DEBUG);
+        logConsole("Aviso importante", LogLevel.WARNING);
+        logConsole("Erro crítico", LogLevel.ERROR);
+        
+        logFile("Mensagem de depuração", LogLevel.DEBUG);
+        logFile("Aviso importante", LogLevel.WARNING);
+        logFile("Erro crítico", LogLevel.ERROR);
+    }
+}
